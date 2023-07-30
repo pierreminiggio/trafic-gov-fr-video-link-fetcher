@@ -211,7 +211,7 @@ foreach ($monthsAndVideoLinks as $monthYear => $videoLinks) {
     }
 
     foreach ($videoLinks as $videoLink) {
-        $videoId = $getVideoId($videoLink);
+        $videoId = $getVideoId($periodId, $videoLink);
 
         if (! $videoId) {
             $fetcher->exec(
@@ -227,7 +227,7 @@ foreach ($monthsAndVideoLinks as $monthYear => $videoLinks) {
                 ]
             );
 
-            $videoId = $getVideoId($monthYear);
+            $videoId = $getVideoId($periodId, $videoLink);
 
             if (! $videoId) {
                 throw new Exception('Error while inserting video');
