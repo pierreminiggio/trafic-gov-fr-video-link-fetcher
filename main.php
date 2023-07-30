@@ -166,6 +166,29 @@ $getPeriodId = function (string $monthYear) use ($fetcher): ?int
     return null;
 };
 
+$getVideoId = function (int $crashPeriodId, string $videoLink) use ($fetcher): ?int
+{
+    $videos = $fetcher->query(
+        $fetcher->createQuery(
+            'crash'
+        )->select(
+            'id'
+        )->where(
+            'crash_period_id = :crash_period_id AND video_link = :video_link'
+        ),
+        [
+            'crash_period_id' => $crashPeriodId,
+            'video_link' => $videoLink
+        ]
+    );
+
+    if (count($videos)) {
+        return $videos[0]['id'];
+    }
+
+    return null;
+};
+
 foreach ($monthsAndVideoLinks as $monthYear => $videoLinks) {
     $periodId = $getPeriodId($monthYear);
 
@@ -186,5 +209,29 @@ foreach ($monthsAndVideoLinks as $monthYear => $videoLinks) {
             throw new Exception('Error while inserting period');
         }
     }
-    var_dump($videoLinks);
+
+    foreach ($videoLinks as $videoLink) {
+        $videoId = $getVideoId($videoLink);
+
+        if (! $videoId) {
+            $fetcher->exec(
+                $fetcher->createQuery(
+                    'crash'
+                )->insertInto(
+                    'crash_period_id, video_link',
+                    ':crash_period_id, :video_link'
+                ),
+                [
+                    'crash_period_id' => $periodId,
+                    'video_link' => $videoLink
+                ]
+            );
+
+            $videoId = $getVideoId($monthYear);
+
+            if (! $videoId) {
+                throw new Exception('Error while inserting video');
+            }
+        }
+    }
 }
