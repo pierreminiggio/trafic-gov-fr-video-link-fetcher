@@ -1,5 +1,9 @@
 <?php
 
+use PierreMiniggio\ConfigProvider\ConfigProvider;
+use PierreMiniggio\DatabaseConnection\DatabaseConnection;
+use PierreMiniggio\DatabaseFetcher\DatabaseFetcher;
+
 require __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 function getNumericMonthFromTurkishMonthName(string $turkishMonthName): ?int
@@ -129,4 +133,58 @@ foreach ($explodeOnTableStart as $explodedItemIndexOnTableStart => $explodedItem
 
 ksort($monthsAndVideoLinks);
 
-var_dump($monthsAndVideoLinks);
+
+$configProvider = new ConfigProvider(__DIR__ . DIRECTORY_SEPARATOR);
+$config = $configProvider->get();
+$dbConfig = $config;
+
+$fetcher = new DatabaseFetcher(new DatabaseConnection(
+    $dbConfig['host'],
+    $dbConfig['database'],
+    $dbConfig['username'],
+    $dbConfig['password'],
+    DatabaseConnection::UTF8_MB4
+));
+
+$getPeriodId = function (string $monthYear) use ($fetcher): ?int
+{
+    $periods = $fetcher->query(
+        $fetcher->createQuery(
+            'crash_period'
+        )->select(
+            'id'
+        )->where(
+            'period = :period'
+        ),
+        ['period' => $monthYear]
+    );
+
+    if (count($periods)) {
+        return $periods[0]['id'];
+    }
+
+    return null;
+};
+
+foreach ($monthsAndVideoLinks as $monthYear => $videoLinks) {
+    $periodId = $getPeriodId($monthYear);
+
+    if (! $periodId) {
+        $fetcher->exec(
+            $fetcher->createQuery(
+                'crash_period'
+            )->insertInto(
+                'period',
+                ':period'
+            ),
+            ['period' => $monthYear]
+        );
+
+        $periodId = $getPeriodId($monthYear);
+
+        if (! $periodId) {
+            throw new Exception('Error while inserting period');
+        }
+    }
+    var_dump($videoLinks);
+}
