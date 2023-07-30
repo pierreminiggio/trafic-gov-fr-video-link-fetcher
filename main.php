@@ -1,5 +1,7 @@
 <?php
 
+require __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
 function getNumericMonthFromTurkishMonthName(string $turkishMonthName): ?int
 {
     $mapping = [
@@ -127,4 +129,4 @@ foreach ($explodeOnTableStart as $explodedItemIndexOnTableStart => $explodedItem
 
 ksort($monthsAndVideoLinks);
 
-echo json_encode($monthsAndVideoLinks);
+var_dump($monthsAndVideoLinks);

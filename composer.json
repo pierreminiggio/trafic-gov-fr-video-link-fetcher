@@ -1,0 +1,5 @@
+{
+    "require": {
+        "pierreminiggio/database-fetcher": "^1.0"
+    }
+}
