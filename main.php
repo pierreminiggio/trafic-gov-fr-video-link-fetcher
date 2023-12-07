@@ -32,11 +32,12 @@ function getNumericMonthFromTurkishMonthName(string $turkishMonthName): ?int
     return null;
 }
 
-$request = curl_init('https://trafik.gov.tr/kgys-goruntuleri');
+$request = curl_init('https://www.trafik.gov.tr/kgys-goruntuleri');
 
 curl_setopt_array($request, [
     CURLOPT_RETURNTRANSFER => 1,
-    CURLOPT_FOLLOWLOCATION => 1
+    CURLOPT_FOLLOWLOCATION => 1,
+    CURLOPT_SSL_VERIFYPEER => 0
 ]);
 
 $response = curl_exec($request);
