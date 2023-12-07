@@ -35,15 +35,17 @@ function getNumericMonthFromTurkishMonthName(string $turkishMonthName): ?int
 $request = curl_init('https://trafik.gov.tr/kgys-goruntuleri');
 
 curl_setopt_array($request, [
-    CURLOPT_RETURNTRANSFER => 1
+    CURLOPT_RETURNTRANSFER => 1,
+    CURLOPT_FOLLOWLOCATION => 1
 ]);
 
 $response = curl_exec($request);
+$httpCode = curl_getinfo($request)['http_code'];
 $error = curl_error($request);
 curl_close($request);
 
 if (! $response) {
-    echo json_encode(['error' => 'No response, error : ' . $error]);
+    echo json_encode(['error' => 'No response, HTTP Code : ' . $httpCode . ' error : ' . $error]);
     die;
 }
 
