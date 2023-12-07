@@ -39,10 +39,11 @@ curl_setopt_array($request, [
 ]);
 
 $response = curl_exec($request);
+$error = curl_error($request);
 curl_close($request);
 
 if (! $response) {
-    echo json_encode(['error' => 'No response']);
+    echo json_encode(['error' => 'No response, error : ' . $error]);
     die;
 }
 
