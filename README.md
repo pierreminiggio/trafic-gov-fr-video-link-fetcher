@@ -1,3 +1,5 @@
+Outdated, https://www.trafik.gov.tr/kgys-goruntuleri returns HTTP Code 404 now
+
 ```sql
 CREATE TABLE `turkish_trafic_accident`.`crash_period` (
   `id` INT NOT NULL AUTO_INCREMENT,
